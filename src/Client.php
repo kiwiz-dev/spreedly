@@ -5,6 +5,7 @@ namespace Tuurbo\Spreedly;
 use GuzzleHttp\ClientInterface as GuzzleInterface;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
+use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 
 class Client
 {
@@ -66,7 +67,7 @@ class Client
 
             try {
                 $response = $this->client->{$method}($baseUrl.$url, $this->buildData($data));
-            } catch(RequestException $e) {
+            } catch(GuzzleRequestException $e) {
                 // If 422 error, ignore
                 if($e->getResponse()->getStatusCode() !== 422) {
                     throw $e;
