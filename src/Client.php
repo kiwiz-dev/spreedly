@@ -64,7 +64,15 @@ class Client
         try {
             $baseUrl = $this->config['baseUrl'];
 
-            $response = $this->client->{$method}($baseUrl.$url, $this->buildData($data));
+            try {
+                $response = $this->client->{$method}($baseUrl.$url, $this->buildData($data));
+            } catch(RequestException $e) {
+                // If 422 error, ignore
+                if($e->getResponse()->getStatusCode() !== 422) {
+                    throw $e;
+                }
+                $response = $e->getResponse();
+            }
 
             if (!in_array($response->getStatusCode(), [200, 201])) {
                 $contentType = $response->getHeader('Content-Type');
